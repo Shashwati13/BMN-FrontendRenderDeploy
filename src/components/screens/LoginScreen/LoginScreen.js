@@ -45,7 +45,7 @@ function LoginScreen() {
         let idToken = await loginData.user.getIdToken();
 
         let { data } = await axios.post(
-          "http://localhost:4000/users/signup",
+          "https://bookmynest-backend.onrender.com/users/signup",
           null,
           {
             headers: {
@@ -93,7 +93,7 @@ function LoginScreen() {
       let idToken = await data.user.getIdToken();
       try {
         let { data } = await axios.post(
-          "http://localhost:4000/users/signup",
+          "https://bookmynest-backend.onrender.com/users/signup",
           {
             role: "USER",
           },

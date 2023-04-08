@@ -48,7 +48,7 @@ function RegisterScreen() {
 
         try {
           let { data } = await axios.post(
-            "http://localhost:4000/users/signup",
+            "https://bookmynest-backend.onrender.com/users/signup",
             {
               name: name.value,
               role: "USER",

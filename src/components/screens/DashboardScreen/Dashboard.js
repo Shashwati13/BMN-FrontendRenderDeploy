@@ -1,135 +1,229 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Form, Row, Col } from "react-bootstrap";
-import "./Dashboard.css";
-import Card from "react-bootstrap/Card";
-import InputGroup from "react-bootstrap/InputGroup";
-import Spinner from "react-bootstrap/Spinner";
-import Carousel from "react-bootstrap/Carousel";
-import { Link } from "react-router-dom";
-function Dashboard() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [getProperties, setProperties] = useState([]);
-  const [getSearchKey, setSearchKey] = useState("");
-  const [getSearchError, setSearchError] = useState(false);
-  // let isSerchError = false;
+import React, { useState ,useEffect} from 'react';
+import Container from 'react-bootstrap/Container';
+import { Form, Button, Row, Col } from 'react-bootstrap';
+import './Dashboard.css'
+import data from './Data.json';
+import Card from 'react-bootstrap/Card';
 
-  const getData = async () => {
-    try {
-      const { data } = await axios.get(
-        `http://localhost:4000/property/?search=${getSearchKey}`
-      );
-      if (data.length === 0) {
-        setSearchError(true);
-      }
-      setProperties(data);
-    } catch (e) {
-      setSearchError(true);
-      if (e.response.status === 404) {
-      } else {
-        // alert(e.response.data.error);
+
+function Dashboard() {
+  const [searchInput, setSearchInput] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [bedrooms, setBedrooms] = useState('');
+  const [rent, setRent] = useState('');
+  const [type, setType] = useState('');
+  const [bookingMessage, setBookingMessage] = useState('');
+  
+  const [SearchClicked, setSearchClicked] = useState(false);
+  const importAll = (r) => r.keys().map(r);
+const images = importAll(require.context('./images', false, /\.(png|jpe?g|svg)$/));
+
+
+  const apartmentsData = data.apartments;
+  const [randomRentals, setRandomRentals] = useState([]);
+  useEffect(() => {
+    // Filter apartments in Bloomington
+    const bloomingtonApartments = data.apartments.filter(
+      (apartment) => apartment.city.toLowerCase() === 'bloomington'
+    );
+
+    // Generate 4 random numbers between 0 and the length of the bloomingtonApartments array
+    const randomIndexes = [];
+    while (randomIndexes.length < 4) {
+      const randomIndex = Math.floor(Math.random() * bloomingtonApartments.length);
+      if (!randomIndexes.includes(randomIndex)) {
+        randomIndexes.push(randomIndex);
       }
     }
+
+    // Select 4 random apartments from the bloomingtonApartments array
+    const randomApartments = randomIndexes.map(
+      (randomIndex) => bloomingtonApartments[randomIndex]
+    );
+    setRandomRentals(randomApartments);
+  }, []);
+
+  const handleSearchInputChange = (event) => {
+    setSearchInput(event.target.value);
   };
+ const handleBedroomsChange = (event)=>{
+  setBedrooms(event.target.value);
 
-  useEffect(() => {
-    getData();
-  }, [getSearchKey]);
+ }
+ const handleRentChange = (event) => {
+  setRent(event.target.value);
 
-  const buildCard = (prop) => {
-    let propCro = prop.propertyImages.map((d) => {
+ }
+ const handleTypeChange =(event)=> {
+  setType(event.target.value);
+
+ }
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+    const filteredApartments = apartmentsData.filter((apartment) => {
+      const regex = /\s+/g;
+      const searchInputTrimmed = searchInput.replace(regex, '');
       return (
-        <Carousel.Item>
-          <img
-            style={{ height: "200px" }}
-            className="d-block w-100"
-            src={d}
-            alt={d}
-          />
-        </Carousel.Item>
+        apartment.city.toLowerCase().trim().replace(regex, '') === searchInputTrimmed.toLowerCase() ||
+        apartment.state.toLowerCase() === searchInputTrimmed.toLowerCase() ||
+        apartment.zipCode.toLowerCase() === searchInputTrimmed.toLowerCase()
       );
     });
 
-    return (
-      <Card style={{ width: "18rem", height: "100%" }}>
-        <Carousel>{propCro}</Carousel>
-        <Link
-          style={{ textDecoration: "none", color: "black" }}
-          to={`/property/${prop._id}`}
-        >
-          <Card.Body>
-            <Card.Title>{prop.propertyName}</Card.Title>
-            <Card.Text>
-              {prop.propertyAddress.addressOne}{" "}
-              {prop.propertyAddress.addressTwo}, {prop.propertyAddress.city},
-              {prop.propertyAddress.state} {prop.propertyAddress.zip}
-            </Card.Text>
-            <Card.Text>Rent: ${prop.propertyPrice}</Card.Text>
-            <Card.Text>Bedrooms: {prop.bedrooms}</Card.Text>
-            <Card.Text>Bathrooms: {prop.bathrooms}</Card.Text>
-          </Card.Body>
-        </Link>
-      </Card>
-    );
+    setSearchResults(filteredApartments);
+    setIsLoading(false);
+    setSearchClicked(true);
   };
 
-  const handleChange = (e) => {
-    setSearchError(false);
-    if (e.target.value.length >= 0) {
-      let searchTerm = e.target.value;
-      setSearchKey(searchTerm);
-    }
+  const handleRentalBooking = (rentalId) => {
+    const selectedRental = apartmentsData.find((rental) => rental.id === rentalId);
+    setBookingMessage(`You have successfully booked ${selectedRental.name} for ${selectedRental.rent}$ per month. Enjoy your stay!`);
   };
+
   return (
-    <div className="propertiesList">
-      <Row>
-        <Col md={{ span: 6, offset: 3 }} style={{ marginTop: "40px" }}>
-          <h1>Welcome To Book My Nest !</h1>
-          <InputGroup size="lg" className="mb-3 searchInput">
-            <Form.Control
-              onChange={(e) => handleChange(e)}
-              placeholder="Enter a City, State, or ZIP code"
-              aria-label="Search for Rentals"
-              aria-describedby="basic-addon2"
-              id="search"
-              required
-            />
-          </InputGroup>
-        </Col>
-      </Row>
-      {getSearchError ? (
-        <div className="error">
-          <p>No Properties to display!!!</p>
+    <div className='dashboard'>
+      <h1>Welcome To Book My Nest   !</h1>
+      <Container className='dashboard__container'>
+        <h2>Search for Rentals</h2>
+        <Form onSubmit={handleSearchSubmit}>
+    <Row className='mb-3'>
+      <Col>
+      <label htmlFor='bedrooms' Text-align="center">Rental</label>
+        <Form.Control
+          type='text'
+          placeholder='Enter a city, state, or ZIP code'
+          value={searchInput}
+          onChange={handleSearchInputChange}
+        />
+      </Col>
+     <Button type='submit' variant='primary' align="center" >
+          Search
+        </Button>
+        
+       </Row>
+ 
+    
+
+    <div style={{ display: 'inline-flex', justifyContent: 'center' }}> 
+        <div className='option'>
+          <label htmlFor='bedrooms' text-align="center">Bedrooms:</label>
+          <select id='bedrooms' value={bedrooms} onChange={handleBedroomsChange}>
+            <option value=''>No min</option>
+            <option value='1'>1 bed</option>
+            <option value='2'>2 bed</option>
+            <option value='3'>3 bed</option>
+            <option value='4'>4 bed</option>
+          </select>
         </div>
-      ) : (
-        <div>
-          {isLoading ? (
-            <div className="justify-content-center">
-              <Spinner
-                size="xl"
-                animation="border"
-                variant="danger"
-                role="status"
-              ></Spinner>
-            </div>
-          ) : (
-            <div className="row">
-              {getProperties.map((prop) => {
-                return (
-                  <div
-                    className="col"
-                    style={{ marginTop: "20px" }}
-                    key={prop._id}
-                  >
-                    {buildCard(prop)}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+     
+        <div className='option'  style={{ marginLeft: '5px', marginRight: '10px' }}>
+          <label htmlFor='rent' text-align="center">Price</label>
+          <select id='rent' value={rent} onChange={handleRentChange}>
+            <option value=''>No min</option>
+            <option value='800'>$800</option>
+            <option value='900'>$900</option>
+            <option value='1100'>$1100</option>
+            <option value='1300'>$1300</option>
+            <option value='1500'>$1500</option>
+            <option value='1700'>$1700</option>
+            <option value='greater'>$1700+</option>
+          </select>
         </div>
-      )}
+    
+        <div className='option' style={{ marginLeft: '5px', marginRight: '10px' }} >
+          <label htmlFor='type'>Type:</label>
+          <select id='type' value={type} onChange={handleTypeChange}>
+            <option value=''>All</option>
+            <option value='Apartments'>Apartments</option>
+            <option value='Houses'>Houses</option>
+            <option value='Condos'>Condos</option>
+            <option value='Townhomes'>Townhomes</option>
+          </select>
+        </div>
+      
+      <Button type='reset' variant='primary' align="center" >
+          Reset
+        </Button>
+        </div>
+    
+          </Form>
+        {!SearchClicked ? (
+  <div>
+    <br>
+    </br>
+
+    <p align="center">Home Away From Home</p>
+  </div>
+) : isLoading ? (
+  <p>Loading search results...</p>
+) : searchResults.length > 0 ? (
+  <div>
+    <p>Showing {searchResults.length} results</p>
+    <ul>
+      {searchResults.map((result) => (
+        <li key={result.id}>
+          <h3>{result.name}</h3>
+          <p>
+            {result.address}, {result.city}, {result.state} {result.zipCode}
+          </p>
+          <p>
+            Rent: {result.rent}, Bedrooms: {result.bedrooms}, Bathrooms:{' '}
+            {result.bathrooms}
+          </p>
+          <p>
+            Pets allowed: {result.petsAllowed ? 'Yes' : 'No'}, Parking
+            available: {result.parkingAvailable ? 'Yes' : 'No'}
+          </p>
+          <Button onClick={() => handleRentalBooking(result.id)}>View Details</Button>
+        </li>
+      ))}
+    </ul>
+  </div>
+) : (
+  <div>
+    <p align="center">No results</p>
+  </div>
+)}
+{bookingMessage && <p>{bookingMessage}</p>}
+
+        
+</Container>
+<Container className='user__container'>
+
+        <h2>Explore Rentals in Bloomington</h2>
+        <div className='user__rentals'>
+          {randomRentals.map((rental) => (
+             <div key={rental.id} className='user__rental-card'>
+             <Card style={{ width: '100%' }}>
+            <Card key={rental.id} style={{ width: '18rem' }}>
+              <Card.Img variant='top' src={images[rental.image]} />
+              <Card.Body>
+                <Card.Title>{rental.name}</Card.Title>
+                <Card.Text>
+                  {rental.address}, {rental.city}, {rental.state} {rental.zipCode}
+                </Card.Text>
+                <Card.Text>Rent: {rental.rent}</Card.Text>
+                <Card.Text>Bedrooms: {rental.bedrooms}</Card.Text>
+                <Card.Text>Bathrooms: {rental.bathrooms}</Card.Text>
+              </Card.Body>
+            </Card>
+            </Card>
+            </div>
+          ))}
+        </div>
+      </Container>
+    <Container>
+      <div className='lastline'>
+        <h2>The Most Rental Listings</h2>
+
+        <h4> Choose from over 1 million apartments, houses, condos, and townhomes for rent.</h4>
+
+      </div>
+    </Container>
     </div>
+    
   );
 }
 

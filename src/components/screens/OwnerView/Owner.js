@@ -10,8 +10,6 @@ import Alert from "react-bootstrap/Alert";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
 import Carousel from "react-bootstrap/Carousel";
-import Spinner from "react-bootstrap/Spinner";
-import { Link } from "react-router-dom";
 
 function Owner() {
   let token = Cookies.get("token");
@@ -21,7 +19,6 @@ function Owner() {
   const [showAlert, setAlert] = useState(false);
   const [showError, setError] = useState("");
   const [showSuccess, setSuccess] = useState(false);
-  const [getHidden, setHidden] = useState(false);
   const getData = async () => {
     try {
       const header = {
@@ -30,7 +27,7 @@ function Owner() {
         },
       };
       const { data } = await axios.get(
-        `http://localhost:4000/property/user/${userId}`,
+        `https://bookmynest-backend.onrender.com/property/${userId}`,
         header
       );
       setPropList(data);
@@ -58,22 +55,17 @@ function Owner() {
         <div className="col" key={prop._id}>
           <Card style={{ width: "18rem" }}>
             <Carousel>{propCro}</Carousel>
-            <Link
-              style={{ textDecoration: "none", color: "black" }}
-              to={`/property/${prop._id}`}
-            >
-              <Card.Body>
-                <Card.Title>{prop.propertyName}</Card.Title>
-                <Card.Text>
-                  {prop.propertyAddress.addressOne}
-                  {prop.propertyAddress.addressTwo}, {prop.propertyAddress.city}
-                  ,{prop.propertyAddress.state} {prop.propertyAddress.zip}
-                </Card.Text>
-                <Card.Text>Rent: ${prop.propertyPrice}</Card.Text>
-                <Card.Text>Bedrooms: {prop.bedrooms}</Card.Text>
-                <Card.Text>Bathrooms: {prop.bathrooms}</Card.Text>
-              </Card.Body>
-            </Link>
+            <Card.Body>
+              <Card.Title>{prop.propertyName}</Card.Title>
+              <Card.Text>
+                {prop.propertyAddress.addressOne}
+                {prop.propertyAddress.addressTwo}, {prop.propertyAddress.city},
+                {prop.propertyAddress.state} {prop.propertyAddress.zip}
+              </Card.Text>
+              <Card.Text>Rent: ${prop.propertyPrice}</Card.Text>
+              <Card.Text>Bedrooms: {prop.bedrooms}</Card.Text>
+              <Card.Text>Bathrooms: {prop.bathrooms}</Card.Text>
+            </Card.Body>
           </Card>
         </div>
       );
@@ -133,7 +125,6 @@ function Owner() {
     "Wyoming",
   ];
   const addProperty = async () => {
-    setHidden(true);
     try {
       let propertyName = document.getElementById("pName").value.trim();
       let addressOne = document.getElementById("add1").value.trim();
@@ -160,64 +151,49 @@ function Owner() {
       let role = document.getElementById("role").value.trim();
 
       if (propertyName.length === 0) {
-        setHidden(false);
         setError("Property Name is Empty");
         setAlert(true);
       } else if (addressOne.length === 0) {
         setError("Address 1 is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (addressTwo.length === 0) {
         setError("Address 2 is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (city.length === 0) {
         setError("City is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (state.length === "Choose...") {
         setError("Select Sate is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (zip.length === 0) {
         setError("Zip code is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (price.length === 0) {
         setError("Price is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (files.length === 0) {
         setError("Upload at least One Image");
-        setHidden(false);
         setAlert(true);
       } else if (bedrooms.length === 0) {
         setError("Bedrooms is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (bathrooms.length === 0) {
         setError("Bathrooms is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (fName.length === 0) {
         setError("First Name is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (lName.length === 0) {
         setError("Last Name is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (email.length === 0) {
         setError("Email is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (phone.length === 0) {
         setError("Contact Number is Empty");
-        setHidden(false);
         setAlert(true);
       } else if (role.length === "choose") {
         setError("Select Your Role");
-        setHidden(false);
         setAlert(true);
       } else {
         var formData = new FormData();
@@ -255,7 +231,7 @@ function Owner() {
           },
         };
         const { data } = await axios.post(
-          "http://localhost:4000/property/",
+          "https://bookmynest-backend.onrender.com/property/",
           formData,
           header
         );
@@ -263,7 +239,6 @@ function Owner() {
         window.location.reload();
       }
     } catch (e) {
-      setHidden(false);
       console.log(e);
     }
   };
@@ -480,27 +455,10 @@ function Owner() {
                 >
                   {showError}
                 </Alert>
-                <Button onClick={addProperty} hidden={getHidden}>
-                  Submit
-                </Button>
-                <Button variant="primary" hidden={!getHidden} disabled>
-                  <Spinner
-                    as="span"
-                    animation="grow"
-                    size="sm"
-                    role="status"
-                    aria-hidden="true"
-                  />
-                  Submitting...
-                </Button>
+                <Button onClick={addProperty}>Submit</Button>
               </Form>
             </Card.Body>
           </Card>
-        </div>
-      </Tab>
-      <Tab eventKey="booking" title="Bookings">
-        <div className="d-flex justify-content-md-center mt-4 container row">
-          <p>Mange Properties Bookings</p>
         </div>
       </Tab>
     </Tabs>
