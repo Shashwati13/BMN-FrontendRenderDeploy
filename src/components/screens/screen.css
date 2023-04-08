@@ -1,0 +1,14 @@
+.DashBoarsScreeen {
+    margin-left: 250px;
+    /* width of the aside */
+    padding-top: 0px;
+    /* height of the header */
+    margin-top: 20px;
+    padding-bottom: 60px;
+    /* height of the footer */
+    /* border: 2px solid black; */
+}
+
+.property-details {
+    padding: 15px 10px;
+}

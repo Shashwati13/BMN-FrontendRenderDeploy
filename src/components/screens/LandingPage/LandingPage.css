@@ -1,0 +1,66 @@
+.main{
+    min-height: 93vh;
+    display: flex;
+    align-items: center;
+    background-image: url("../../Assets/background1.jpg");
+
+    background-position: center;
+    background-size: cover;
+    opacity: 0.9;
+}
+.mr-sm-2{
+    opacity:0.7;
+    width:500px;
+    height: 50px;
+    font-size: 20px;
+    
+ 
+}
+.title{
+    font-size: 95px;
+    color: white;
+
+
+}
+.subtitle{
+    font-size: 25px;
+    padding-top:10px;
+    color: white;
+    
+}
+.search-container{
+    justify-content:center;
+    display: flex;
+
+}
+.intro-text{
+    width:100%;
+    text-align:center;
+}
+.landingbutton {
+    width:200px;
+    height:55px;
+}
+.buttonContainer {
+margin-top: 50px;
+display: flex;
+justify-content:space-evenly;
+}
+
+@media only screen and (min-width:1200px){
+    .buttonContainer{
+        padding:0 200px;
+    }
+    .title{
+        padding:0 100px;
+    }
+}
+@media only screen and (min-width:768px){
+    .title{
+    font-size: 60px;  
+    }
+    .landingbutton {
+        width:150px;
+        height:50px;
+    }
+}
