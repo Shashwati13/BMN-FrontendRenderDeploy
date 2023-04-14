@@ -27,7 +27,7 @@ function PropertyDetail() {
   var [center,setCenter]=useState({});
   const { id } = useParams();
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyBEt4JBS7t5ui30th4o_8XxlIK57f1Zu7s",
+    googleMapsApiKey: process.env.googleMapsApiKey,
     libraries: ["places"],
   });
 
