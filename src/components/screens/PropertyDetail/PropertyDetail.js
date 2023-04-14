@@ -4,6 +4,14 @@ import Card from "react-bootstrap/Card";
 import Cookies from "js-cookie";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
+import {
+  useJsApiLoader,
+  GoogleMap,
+  Marker,
+  Autocomplete,
+  DirectionsRenderer,
+  LoadScript,
+} from "@react-google-maps/api";
 // import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 // import Alert from "react-bootstrap/Alert";
@@ -13,8 +21,15 @@ import Carousel from "react-bootstrap/Carousel";
 import { useParams } from "react-router-dom";
 // import Spinner from "react-bootstrap/Spinner";
 
+
 function PropertyDetail() {
+  const [map, setMap] = useState(null);	
+  var [center,setCenter]=useState({});
   const { id } = useParams();
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: "AIzaSyBEt4JBS7t5ui30th4o_8XxlIK57f1Zu7s",
+    libraries: ["places"],
+  });
 
   const [index, setIndex] = useState(0);
   const [getProperties, setProperties] = useState(undefined);
@@ -22,8 +37,15 @@ function PropertyDetail() {
   console.log(id);
   const getData = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:4000/property/${id}`);
+      const { data } = await axios.get(`https://bookmynest-backend.onrender.com/property/${id}`);
       setProperties(data);
+      // console.log("Hllo",parseFloat(data.latitude.latitude))
+      var integerLongitude = parseFloat(data.longitude.longitude);
+      var integerLatitude = parseFloat(data.latitude.latitude);
+      var center1 = { lat:integerLatitude, lng:integerLongitude};
+      setCenter(center1)
+      // console.log("Center")
+      // console.log("Center",center1)
     } catch (e) {
       if (e.response.status === 404) {
       } else {
@@ -35,6 +57,8 @@ function PropertyDetail() {
   useEffect(() => {
     getData();
   }, []);
+  if (loadError) return "Error loading maps";	
+  if (!isLoaded) return "Loading maps...";	
 
   const handleSelect = (selectedIndex, e) => {
     setIndex(selectedIndex);
@@ -79,7 +103,29 @@ function PropertyDetail() {
                     <Button>Book Now</Button>
                   )}
                 </Card.Body>
+                
               </Card>
+              <Card style={{ width: "100%", marginTop: "10px" }}>
+          <div className="google_maps_show" style={{height:"150px", width:"200%",position:"absolute"}}>
+                <GoogleMap
+                    center={center}
+                    zoom={14}
+                    mapContainerStyle={{ width: "100%", height: "100%" }}
+                    options={{
+                        zoomControl: false,
+                        streetViewControl: false,
+                        mapTypeControl: false,
+                      fullscreenControl: false,
+                     }}
+                    onLoad={(map) => setMap(map)}>
+                   <Marker
+            position={{ lat: center.lat, lng: center.lng }}
+            map={map}
+          />
+                  </GoogleMap>
+                </div>
+                </Card>
+              
             </Col>
           </Row>
         </Col>
@@ -101,6 +147,7 @@ function PropertyDetail() {
               </Card.Body>
             </Card>
           </Row>
+
           <Row>
             <Card style={{ width: "100%", marginTop: "10px" }}>
               <Card.Body>
@@ -154,7 +201,10 @@ function PropertyDetail() {
                 <Card.Text>Phone: {getProperties.personalInfo.phone}</Card.Text>
               </Card.Body>
             </Card>
+            
+
           </Row>
+          
         </Col>
       </Row>
     );
@@ -166,6 +216,7 @@ function PropertyDetail() {
     );
   }
 
+ 
   return <div style={{ marginTop: "40px" }}>{detailData}</div>;
 }
 
