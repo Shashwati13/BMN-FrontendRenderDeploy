@@ -8,9 +8,9 @@ import {
   useJsApiLoader,
   GoogleMap,
   Marker,
-  Autocomplete,
-  DirectionsRenderer,
-  LoadScript,
+  // Autocomplete,
+  // DirectionsRenderer,
+  // LoadScript,
 } from "@react-google-maps/api";
 // import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";

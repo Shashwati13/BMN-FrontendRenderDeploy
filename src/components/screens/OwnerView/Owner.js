@@ -14,11 +14,9 @@ import Spinner from "react-bootstrap/Spinner";
 import { Link } from "react-router-dom";
 import {
   useJsApiLoader,
-  GoogleMap,
-  Marker,
+ 
   Autocomplete,
-  DirectionsRenderer,
-  LoadScript,
+
 } from "@react-google-maps/api";
 
 function Owner() {
@@ -30,11 +28,11 @@ function Owner() {
   const [showError, setError] = useState("");
   const [showSuccess, setSuccess] = useState(false);
   const [getHidden, setHidden] = useState(false);
-  const [map, setMap] = useState(null);	
-  const [directionsResponse, setDirectionsResponse] = useState(null);	
-  const [distance, setDistance] = useState("");
+  // const [map, setMap] = useState(null);	
+  // const [directionsResponse, setDirectionsResponse] = useState(null);	
+  // const [distance, setDistance] = useState("");
 
-  const [addressOne1,setaddressOne] = useState("");
+  // const [addressOne1,setaddressOne] = useState("");
 
   const sourceRef = useRef(null);
 
