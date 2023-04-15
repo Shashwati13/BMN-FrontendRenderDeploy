@@ -1,11 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, {useState } from "react";
 import {
   logInWithEmailAndPassword,
   signInWithGoogle,
   sendPasswordReset,
 } from "../../../firebase";
 import axios from "axios";
-
 import Card from "react-bootstrap/Card";
 import Cookies from "js-cookie";
 import Button from "react-bootstrap/Button";
