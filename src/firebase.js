@@ -11,11 +11,11 @@ import {
 } from "firebase/auth";
 import {
   getFirestore,
-  query,
-  getDocs,
-  collection,
-  where,
-  addDoc,
+  // query,
+  // getDocs,
+  // collection,
+  // where,
+  // addDoc,
 } from "firebase/firestore";
 // Import the functions you need from the SDKs you need
 import { getAnalytics } from "firebase/analytics";
