@@ -15,7 +15,7 @@ function AdminPayments() {
 
   const getData = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:4000/admin/payments`);
+      const { data } = await axios.get(`https://bookmynest-backend.onrender.com/admin/payments`);
       setProperties(data);
     } catch (e) {
       if (e.response.status === 404) {
