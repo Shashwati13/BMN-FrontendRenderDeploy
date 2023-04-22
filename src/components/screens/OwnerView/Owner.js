@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef  } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Card from "react-bootstrap/Card";
 import Cookies from "js-cookie";
@@ -9,36 +9,40 @@ import Row from "react-bootstrap/Row";
 import Alert from "react-bootstrap/Alert";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-
 import Carousel from "react-bootstrap/Carousel";
 import Spinner from "react-bootstrap/Spinner";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   useJsApiLoader,
- 
+//   GoogleMap,
+//   Marker,
   Autocomplete,
-
+  DirectionsRenderer,
+  LoadScript,
 } from "@react-google-maps/api";
-
+import Table from "react-bootstrap/Table";
+import moment from "moment/moment";
+import Badge from "react-bootstrap/Badge";
 function Owner() {
   let token = Cookies.get("token");
   let userId = Cookies.get("user");
   let propCards = undefined;
+  const history = useHistory();
   const [getPropList, setPropList] = useState(undefined);
   const [showAlert, setAlert] = useState(false);
   const [showError, setError] = useState("");
   const [showSuccess, setSuccess] = useState(false);
   const [getHidden, setHidden] = useState(false);
-  // const [map, setMap] = useState(null);	
-  // const [directionsResponse, setDirectionsResponse] = useState(null);	
-  // const [distance, setDistance] = useState("");
-
-  // const [addressOne1,setaddressOne] = useState("");
+  const [map, setMap] = useState(null);
+  const [directionsResponse, setDirectionsResponse] = useState(null);
+  const [distance, setDistance] = useState("");
+  const [getProperties, setProperties] = useState(undefined);
+  const [addressOne1, setaddressOne] = useState("");
 
   const sourceRef = useRef(null);
 
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: process.env.googleMapsApiKey,
+    googleMapsApiKey: "AIzaSyDF23s0BdVZxNdVw-SE2-81MIjQUawQcS4",
     libraries: ["places"],
   });
 
@@ -50,7 +54,6 @@ function Owner() {
         },
       };
       const { data } = await axios.get(
-        
         `https://bookmynest-backend.onrender.com/users/${userId}`,
         header
       );
@@ -61,9 +64,24 @@ function Owner() {
         // alert(e.response.data.error);
       }
     }
+    try {
+      const header = {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      };
+      const { data } = await axios.get(
+        `https://bookmynest-backend.onrender.com/users/${userId}/manage/bookings`,
+        header
+      );
+      setProperties(data);
+    } catch (e) {
+      if (e.response.status === 404) {
+      } else {
+      }
+    }
   };
 
-  
   useEffect(() => {
     getData();
   }, []);
@@ -78,14 +96,15 @@ function Owner() {
       });
 
       const center = { lat: prop.latitude, lng: prop.longitude };
-      console.log("Center",center.lat)
+      console.log("Center", center.lat);
       return (
         <div className="col" key={prop._id}>
           <Card style={{ width: "18rem" }}>
             <Carousel>{propCro}</Carousel>
             <Link
               style={{ textDecoration: "none", color: "black" }}
-              to={`/property/${prop._id}`}>
+              to={`/property/${prop._id}`}
+            >
               <Card.Body>
                 <Card.Title>{prop.propertyName}</Card.Title>
                 <Card.Text>
@@ -96,7 +115,7 @@ function Owner() {
                 <Card.Text>Rent: ${prop.propertyPrice}</Card.Text>
                 <Card.Text>Bedrooms: {prop.bedrooms}</Card.Text>
                 <Card.Text>Bathrooms: {prop.bathrooms}</Card.Text>
-                
+
                 {/* <div className="google_maps_show" style={{height:"150px", width:"100%",position:"absolute"}}>
                 <GoogleMap
                     center={center}
@@ -176,12 +195,12 @@ function Owner() {
   const addProperty = async () => {
     setHidden(true);
     try {
-      const sourcePlace = sourceRef.current.getPlace();  	
-      const latitude=sourcePlace.geometry.location.lat();	
-      const longitude=sourcePlace.geometry.location.lng();
+      const sourcePlace = sourceRef.current.getPlace();
+      const latitude = sourcePlace.geometry.location.lat();
+      const longitude = sourcePlace.geometry.location.lng();
       let propertyName = document.getElementById("pName").value.trim();
-      
-      let addressOne =  sourcePlace.formatted_address.split(",")[0].trim();   //let addressOne = document.getElementById("add1").value.trim();
+
+      let addressOne = sourcePlace.formatted_address.split(",")[0].trim(); //let addressOne = document.getElementById("add1").value.trim();
 
       let addressTwo = document.getElementById("add2").value.trim();
       let city = document.getElementById("city").value.trim();
@@ -293,7 +312,7 @@ function Owner() {
         formData.append("email", email);
         formData.append("phone", phone);
         formData.append("role", role);
-        formData.append("latitude", latitude);	
+        formData.append("latitude", latitude);
         formData.append("longitude", longitude);
 
         const header = {
@@ -315,10 +334,10 @@ function Owner() {
       console.log(e);
     }
   };
-  // if (loadError) return "Error loading maps";	
-  // if (!isLoaded) return "Loading maps...";	
-if (loadError) return "Error loading maps";	
-  if (!isLoaded) return "Loading maps...";	
+  // if (loadError) return "Error loading maps";
+  // if (!isLoaded) return "Loading maps...";
+  if (loadError) return "Error loading maps";
+  if (!isLoaded) return "Loading maps...";
 
   return (
     <Tabs
@@ -352,16 +371,16 @@ if (loadError) return "Error loading maps";
                   </Form.Group>
                 </Row>
                 <Row className="mb-3">
-                <Autocomplete	
-          onLoad={(autocomplete) => {	
-            sourceRef.current = autocomplete;	
-          }}>
-                  <Form.Group as={Col}>
-                    <Form.Label>Address 1</Form.Label>
-                    <Form.Control placeholder="1234 Main St" id="add1" />
-                  </Form.Group>
+                  <Autocomplete
+                    onLoad={(autocomplete) => {
+                      sourceRef.current = autocomplete;
+                    }}
+                  >
+                    <Form.Group as={Col}>
+                      <Form.Label>Address 1</Form.Label>
+                      <Form.Control placeholder="1234 Main St" id="add1" />
+                    </Form.Group>
                   </Autocomplete>
-
                 </Row>
                 <Row className="mb-3">
                   <Form.Group as={Col}>
@@ -558,9 +577,52 @@ if (loadError) return "Error loading maps";
         </div>
       </Tab>
       <Tab eventKey="booking" title="Bookings">
-        <div className="d-flex justify-content-md-center mt-4 container row">
-          <p>Mange Properties Bookings</p>
-        </div>
+        <Table responsive>
+          <thead>
+            <tr>
+              <th>Property Name</th>
+              <th>Booking Dates</th>
+              <th>Booked By</th>
+              <th>Contact No</th>
+              <th>Email</th>
+              <th>Payment Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {getProperties ? (
+              getProperties.map((i) => {
+                return (
+                  <tr
+                    key={i._id}
+                    onClick={() => {
+                      history.push(`/property/${i._id.toString()}`);
+                      window.location.reload();
+                    }}
+                  >
+                    <td>{i.propertyName}</td>
+                    <td>
+                      {moment(i.bookingInfo[0].startDate).format("MMM Do YYYY")}{" "}
+                      {" to  "}
+                      {moment(i.bookingInfo[0].endDate).format("MMM Do YYYY")}
+                    </td>
+                    <td>
+                      {i.bookingInfo[0].fName} {i.bookingInfo[0].lName}
+                    </td>
+                    <td>{i.bookingInfo[0].phone}</td>
+                    <td>{i.bookingInfo[0].email}</td>
+                    <td>
+                      <Badge pill bg="success">
+                        PAID
+                      </Badge>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <div>No Data To show</div>
+            )}
+          </tbody>
+        </Table>
       </Tab>
     </Tabs>
   );
