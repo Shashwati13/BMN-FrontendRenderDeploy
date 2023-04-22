@@ -36,7 +36,7 @@ function PropertyDetail() {
   // console.log(id);
   const getData = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:4000/property/${id}`);
+      const { data } = await axios.get(`https://bookmynest-backend.onrender.com/property/${id}`);
       setProperties(data);
       // console.log("Hllo",parseFloat(data.latitude.latitude))
       var integerLongitude = parseFloat(data.longitude.longitude);
