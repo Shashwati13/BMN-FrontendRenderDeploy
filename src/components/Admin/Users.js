@@ -16,7 +16,7 @@ function AdminUsers() {
 
   const getData = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:4000/admin/users`);
+      const { data } = await axios.get(`https://bookmynest-backend.onrender.com/admin/users`);
       setProperties(data);
     } catch (e) {
       if (e.response.status === 404) {
