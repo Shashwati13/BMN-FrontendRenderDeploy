@@ -54,7 +54,7 @@ function Owner() {
         },
       };
       const { data } = await axios.get(
-        `https://bookmynest-backend.onrender.com/property/users/${userId}`,
+        `https://bookmynest-backend.onrender.com/property/user/${userId}`,
         header
       );
       setPropList(data);
