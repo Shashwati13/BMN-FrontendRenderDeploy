@@ -16,7 +16,7 @@ function AdminProperties() {
   const getData = async () => {
     try {
       const { data } = await axios.get(
-        `http://localhost:4000/admin/properties`
+        `https://bookmynest-backend.onrender.com/admin/properties`
       );
       setProperties(data);
     } catch (e) {
