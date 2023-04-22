@@ -23,7 +23,7 @@ function Bookings() {
         },
       };
       const { data } = await axios.get(
-        `http://localhost:4000/users/${userId}/bookings`,
+        `https://bookmynest-backend.onrender.com/users/${userId}/bookings`,
         header
       );
 
