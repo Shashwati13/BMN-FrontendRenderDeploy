@@ -80,7 +80,7 @@ function BookingModel() {
       const paymentDate = new Date().toISOString().substring(0, 10);
       setTimeout(2000)
       console.log(id)
-      const url = `http://localhost:4000/property/${id}`;
+      const url = `https://bookmynest-backend.onrender.com/property/${id}`;
       console.log(url);
     
       let data1  = await axios.get(url,{
@@ -110,7 +110,7 @@ function BookingModel() {
         const {id:paymentMethodId} = paymentMethod
         console.log("pay",paymentMethodId)
         console.log("amount",data1.data.propertyPrice)
-        const response = await axios.post("http://localhost:4000/payment", {
+        const response = await axios.post("https://bookmynest-backend.onrender.com/payment", {
             amount:data1.data.propertyPrice,
             id:paymentMethodId,
             email,
@@ -174,7 +174,7 @@ function BookingModel() {
         
                
                   const res = await axios.post(
-                    `http://localhost:4000/property/${id}/book`,
+                    `https://bookmynest-backend.onrender.com/property/${id}/book`,
                     data,
                     header
                   );
