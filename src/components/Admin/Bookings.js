@@ -15,7 +15,7 @@ function AdminBookings() {
 
   const getData = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:4000/admin/bookings`);
+      const { data } = await axios.get(`https://bookmynest-backend.onrender.com/admin/bookings`);
       setProperties(data);
     } catch (e) {
       if (e.response.status === 404) {
